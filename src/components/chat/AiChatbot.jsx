@@ -57,7 +57,7 @@ export const AiChatbot = ({ issData, nearestCity, newsData }) => {
       const systemPrompt = `You are a dashboard assistant. Use ONLY the provided ISS and News data. If asked anything else, reply: 'I only have access to current dashboard data.'\n\nISS: ${issInfo}\nNews:\n${newsSnippet}`;
       const formattedPrompt = `<s>[INST] ${systemPrompt}\n\nUser: ${userMsg} [/INST]`;
 
-      const res = await fetch('/api/hf/models/mistralai/Mistral-7B-Instruct-v0.2', {
+      const res = await fetch('/api/hf/mistralai/Mistral-7B-Instruct-v0.2', {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
         body: JSON.stringify({ inputs: formattedPrompt, parameters: { max_new_tokens: 150, temperature: 0.1, return_full_text: false } })
