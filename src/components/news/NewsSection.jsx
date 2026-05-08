@@ -37,7 +37,8 @@ export const NewsSection = ({ newsData, setNewsData, category, setCategory }) =>
           return;
         }
 
-        const res = await axios.get(`https://newsapi.org/v2/everything?q=space OR NASA OR ISS&language=en&pageSize=10&apiKey=${apiKey}`);
+        const res = await axios.get(`https://api.allorigins.win/get?url=${encodeURIComponent(`https://newsapi.org/v2/everything?q=space OR NASA OR ISS&language=en&pageSize=10&apiKey=${apiKey}`)}`);
+        res.data = JSON.parse(res.data.contents);
         
         if (res.data.status === 'ok') {
           setNewsData(res.data.articles);
