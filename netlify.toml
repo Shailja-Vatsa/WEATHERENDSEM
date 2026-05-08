@@ -10,6 +10,6 @@
 
 [[redirects]]
   from = "/api/hf/*"
-  to = "https://api-inference.huggingface.co/:splat"
+  to = "https://api-inference.huggingface.co/models/:splat"
   status = 200
   force = true

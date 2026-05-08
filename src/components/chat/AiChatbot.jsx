@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { MessageSquare, X, Send, Bot, User, Loader2 } from 'lucide-react';
-import { HfInference } from '@huggingface/inference';
 
 export const AiChatbot = ({ issData, nearestCity, newsData }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -52,27 +51,21 @@ export const AiChatbot = ({ issData, nearestCity, newsData }) => {
     }
 
     try {
-      const hf = new HfInference(token, { endpoint: '/api/hf' });
-
       const newsSnippet = newsData.slice(0, 3).map(n => `- ${n.title}`).join('\n');
       const issInfo = issData ? `Lat: ${issData.lat.toFixed(4)}, Lon: ${issData.lon.toFixed(4)}, Speed: ${Math.round(issData.speed)} km/h, Nearest City: ${nearestCity}` : "Acquiring...";
-      
-      // Strict guardrails system prompt as requested
-      const systemPrompt = `You are a dashboard assistant. You have NO knowledge of the outside world. Use ONLY the provided ISS and News state. If the user asks about something else, you MUST reply: 'I only have access to current dashboard data.'\n\nContext:\nCurrent ISS Data: ${issInfo}\nLatest News:\n${newsSnippet}`;
 
+      const systemPrompt = `You are a dashboard assistant. Use ONLY the provided ISS and News data. If asked anything else, reply: 'I only have access to current dashboard data.'\n\nISS: ${issInfo}\nNews:\n${newsSnippet}`;
       const formattedPrompt = `<s>[INST] ${systemPrompt}\n\nUser: ${userMsg} [/INST]`;
 
-      const response = await hf.textGeneration({
-        model: 'mistralai/Mistral-7B-Instruct-v0.2',
-        inputs: formattedPrompt,
-        parameters: {
-          max_new_tokens: 150,
-          temperature: 0.1, // Lower temperature for stricter adherence
-          return_full_text: false,
-        }
+      const res = await fetch('/api/hf/models/mistralai/Mistral-7B-Instruct-v0.2', {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ inputs: formattedPrompt, parameters: { max_new_tokens: 150, temperature: 0.1, return_full_text: false } })
       });
 
-      const reply = response.generated_text.trim();
+      if (!res.ok) throw new Error(`HF error: ${res.status}`);
+      const data = await res.json();
+      const reply = data[0]?.generated_text?.trim() || 'No response received.';
       setMessages(prev => [...prev, { role: 'assistant', content: reply }]);
 
     } catch (error) {
