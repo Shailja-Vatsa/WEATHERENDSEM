@@ -87,7 +87,7 @@ function App() {
     };
 
     fetchIss();
-    const interval = setInterval(fetchIss, 15000);
+    const interval = setInterval(fetchIss, 30000);
     return () => clearInterval(interval);
   }, []);
 
