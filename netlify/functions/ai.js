@@ -4,10 +4,18 @@ export async function handler(event) {
   const token = process.env.VITE_AI_TOKEN;
   if (!token) return { statusCode: 500, body: 'AI token not configured' };
 
-  const res = await fetch('https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.2', {
+  const { userMsg, issInfo, newsSnippet } = JSON.parse(event.body);
+
+  const res = await fetch('https://router.huggingface.co/v1/chat/completions', {
     method: 'POST',
     headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
-    body: event.body,
+    body: JSON.stringify({
+      model: 'Qwen/Qwen3-0.6B:featherless-ai',
+      messages: [
+        { role: 'system', content: `You are a dashboard assistant. Use ONLY the provided ISS and News data. If asked anything else, reply: 'I only have access to current dashboard data.'\n\nISS: ${issInfo}\nNews:\n${newsSnippet}` },
+        { role: 'user', content: userMsg }
+      ]
+    }),
   });
 
   const data = await res.text();

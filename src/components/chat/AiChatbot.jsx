@@ -45,18 +45,15 @@ export const AiChatbot = ({ issData, nearestCity, newsData }) => {
       const newsSnippet = newsData.slice(0, 3).map(n => `- ${n.title}`).join('\n');
       const issInfo = issData ? `Lat: ${issData.lat.toFixed(4)}, Lon: ${issData.lon.toFixed(4)}, Speed: ${Math.round(issData.speed)} km/h, Nearest City: ${nearestCity}` : "Acquiring...";
 
-      const systemPrompt = `You are a dashboard assistant. Use ONLY the provided ISS and News data. If asked anything else, reply: 'I only have access to current dashboard data.'\n\nISS: ${issInfo}\nNews:\n${newsSnippet}`;
-      const formattedPrompt = `<s>[INST] ${systemPrompt}\n\nUser: ${userMsg} [/INST]`;
-
       const res = await fetch('/.netlify/functions/ai', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ inputs: formattedPrompt, parameters: { max_new_tokens: 150, temperature: 0.1, return_full_text: false } })
+        body: JSON.stringify({ userMsg, issInfo, newsSnippet })
       });
 
       if (!res.ok) throw new Error(`HF error: ${res.status}`);
       const data = await res.json();
-      const reply = data[0]?.generated_text?.trim() || 'No response received.';
+      const reply = data.choices?.[0]?.message?.content?.trim() || 'No response received.';
       setMessages(prev => [...prev, { role: 'assistant', content: reply }]);
 
     } catch (error) {
