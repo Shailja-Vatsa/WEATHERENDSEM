@@ -52,7 +52,7 @@ export const AiChatbot = ({ issData, nearestCity, newsData }) => {
     }
 
     try {
-      const hf = new HfInference(token);
+      const hf = new HfInference(token, { endpoint: '/api/hf' });
 
       const newsSnippet = newsData.slice(0, 3).map(n => `- ${n.title}`).join('\n');
       const issInfo = issData ? `Lat: ${issData.lat.toFixed(4)}, Lon: ${issData.lon.toFixed(4)}, Speed: ${Math.round(issData.speed)} km/h, Nearest City: ${nearestCity}` : "Acquiring...";
