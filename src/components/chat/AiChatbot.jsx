@@ -43,7 +43,7 @@ export const AiChatbot = ({ issData, nearestCity, newsData }) => {
     setIsTyping(true);
 
     const token = import.meta.env.VITE_AI_TOKEN;
-    if (!token || token === 'your_huggingface_api_token_here') {
+    if (!token) {
       setTimeout(() => {
         setMessages(prev => [...prev, { role: 'assistant', content: 'Please configure your Hugging Face API token in .env to enable the AI.' }]);
         setIsTyping(false);
