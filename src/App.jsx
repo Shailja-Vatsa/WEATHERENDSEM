@@ -21,7 +21,7 @@ function App() {
 
   // Fetch Astros
   useEffect(() => {
-    axios.get('https://api.open-notify.org/astros.json')
+    axios.get('https://corquaid.github.io/international-space-station-APIs/JSON/people-in-space.json')
       .then(res => {
         setAstros({
           count: res.data.number || 0,
@@ -35,10 +35,9 @@ function App() {
   useEffect(() => {
     const fetchIss = async () => {
       try {
-        const res = await axios.get('https://api.open-notify.org/iss-now.json');
-        const { latitude, longitude } = res.data.iss_position;
-        const lat = parseFloat(latitude);
-        const lon = parseFloat(longitude);
+        const res = await axios.get('https://api.wheretheiss.at/v1/satellites/25544');
+        const lat = res.data.latitude;
+        const lon = res.data.longitude;
         const timestamp = res.data.timestamp;
 
         setIssHistory(prev => {
