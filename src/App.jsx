@@ -21,7 +21,7 @@ function App() {
 
   // Fetch Astros
   useEffect(() => {
-    axios.get('http://api.open-notify.org/astros.json')
+    axios.get('https://api.open-notify.org/astros.json')
       .then(res => {
         setAstros({
           count: res.data.number || 0,
@@ -35,7 +35,7 @@ function App() {
   useEffect(() => {
     const fetchIss = async () => {
       try {
-        const res = await axios.get('http://api.open-notify.org/iss-now.json');
+        const res = await axios.get('https://api.open-notify.org/iss-now.json');
         const { latitude, longitude } = res.data.iss_position;
         const lat = parseFloat(latitude);
         const lon = parseFloat(longitude);
