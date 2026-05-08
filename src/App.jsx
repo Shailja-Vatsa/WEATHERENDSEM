@@ -62,18 +62,22 @@ function App() {
           return [...prev, newPoint].slice(-30);
         });
 
-        // Reverse Geocode
-        try {
-          const geoRes = await axios.get(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=10`);
-          if (geoRes.data && geoRes.data.address) {
-            const addr = geoRes.data.address;
-            const city = addr.city || addr.town || addr.village || addr.state || geoRes.data.name;
-            setNearestCity(`${city}, ${addr.country || ''}`);
-          } else {
+        // Reverse Geocode (only every 60s to avoid rate limiting)
+        const now = Date.now();
+        if (!window._lastGeoFetch || now - window._lastGeoFetch > 60000) {
+          window._lastGeoFetch = now;
+          try {
+            const geoRes = await axios.get(`/api/geo/reverse?format=json&lat=${lat}&lon=${lon}&zoom=5`);
+            if (geoRes.data && geoRes.data.address) {
+              const addr = geoRes.data.address;
+              const city = addr.city || addr.town || addr.village || addr.state || geoRes.data.name;
+              setNearestCity(`${city}, ${addr.country || ''}`);
+            } else {
+              setNearestCity("Over Ocean/Unmapped Area");
+            }
+          } catch (e) {
             setNearestCity("Over Ocean/Unmapped Area");
           }
-        } catch (e) {
-          setNearestCity("Over Ocean/Unmapped Area");
         }
 
       } catch (error) {

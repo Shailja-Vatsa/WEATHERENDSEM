@@ -41,15 +41,6 @@ export const AiChatbot = ({ issData, nearestCity, newsData }) => {
     setInput('');
     setIsTyping(true);
 
-    const token = import.meta.env.VITE_AI_TOKEN;
-    if (!token) {
-      setTimeout(() => {
-        setMessages(prev => [...prev, { role: 'assistant', content: 'Please configure your Hugging Face API token in .env to enable the AI.' }]);
-        setIsTyping(false);
-      }, 1000);
-      return;
-    }
-
     try {
       const newsSnippet = newsData.slice(0, 3).map(n => `- ${n.title}`).join('\n');
       const issInfo = issData ? `Lat: ${issData.lat.toFixed(4)}, Lon: ${issData.lon.toFixed(4)}, Speed: ${Math.round(issData.speed)} km/h, Nearest City: ${nearestCity}` : "Acquiring...";
@@ -57,9 +48,9 @@ export const AiChatbot = ({ issData, nearestCity, newsData }) => {
       const systemPrompt = `You are a dashboard assistant. Use ONLY the provided ISS and News data. If asked anything else, reply: 'I only have access to current dashboard data.'\n\nISS: ${issInfo}\nNews:\n${newsSnippet}`;
       const formattedPrompt = `<s>[INST] ${systemPrompt}\n\nUser: ${userMsg} [/INST]`;
 
-      const res = await fetch('/api/hf/mistralai/Mistral-7B-Instruct-v0.2', {
+      const res = await fetch('/.netlify/functions/ai', {
         method: 'POST',
-        headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ inputs: formattedPrompt, parameters: { max_new_tokens: 150, temperature: 0.1, return_full_text: false } })
       });
 

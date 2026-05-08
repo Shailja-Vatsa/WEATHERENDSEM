@@ -1,6 +1,7 @@
 [build]
   command = "npm run build"
   publish = "dist"
+  functions = "netlify/functions"
 
 [[redirects]]
   from = "/api/news/*"
@@ -9,7 +10,7 @@
   force = true
 
 [[redirects]]
-  from = "/api/hf/*"
-  to = "https://api-inference.huggingface.co/models/:splat"
+  from = "/api/geo/*"
+  to = "https://nominatim.openstreetmap.org/:splat"
   status = 200
   force = true
